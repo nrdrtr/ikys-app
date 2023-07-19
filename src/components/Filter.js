@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Segment, Checkbox, Button } from "semantic-ui-react";
+import { Segment, Checkbox, Button, Menu, Label, Dropdown, Container } from "semantic-ui-react";
 import CityService from "../services/CityService";
 import JobPositionService from "../services/JobPositionService";
-import WorkTimeService from "../services/WorkTimeService";
+import WorkTypesService from "../services/WorkTypesService";
+import { persistReducer } from 'redux-persist';
 
 export default function Filter({ handleFilter }) {
   const [cities, setCities] = useState([]);
@@ -11,6 +12,11 @@ export default function Filter({ handleFilter }) {
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedJobPosition, setSelectedJobPosition] = useState("");
   const [selectedWorkTypes, setSelectedWorkTypes] = useState([]);
+
+  const selecedWorktime = [
+    { key: "1", text: "Tam Zamanlı", value: "Tam Zamanlı" },
+    { key: "2", text: "Yarı Zamanlı", value: "Yarı Zamanlı" },
+  ];
 
   useEffect(() => {
     const cityService = new CityService();
@@ -23,8 +29,8 @@ export default function Filter({ handleFilter }) {
   }, []);
 
   useEffect(() => {
-    const workTimeService = new WorkTimeService();
-    workTimeService.getWorkTimes().then((result) => setWorkTimes(result.data.data));
+    const workTimeService = new WorkTypesService();
+    workTimeService.getAll().then((result) => setWorkTimes(result.data.data));
   }, []);
 
   const handleCityChange = (e) => {
@@ -56,53 +62,64 @@ export default function Filter({ handleFilter }) {
   };
 
   return (
-    <div style={{ marginTop: 90 }}>
-      <Segment as="h3">Şehir</Segment>
-      <Segment.Group>
-        <Segment>
-          <select style={{ width: "200px", height: "30px" }} value={selectedCity} onChange={handleCityChange}>
-            <option value="">Tümü</option>
-            {cities.map((city) => (
-              <option key={city.id} value={city.cityName}>
-                {city.cityName}
-              </option>
-            ))}
-          </select>
-        </Segment>
-      </Segment.Group>
+    <div>
+      <Segment color=" " raised style={{ textAlign: 'left' }}>
 
-      <div className="myBox">
-        <Segment as="h3">Çalışma Şekli</Segment>
-        <Segment.Group as="h3" attached="top">
-          {workTimes.map((workTime) => (
-            <Segment textAlign="left" key={workTime.id}>
-              <Checkbox
-                label={workTime.name}
-                checked={selectedWorkTypes.includes(workTime.name)}
-                onChange={() => handleWorkTypeChange(workTime.name)}
-              />
-            </Segment>
-          ))}
-        </Segment.Group>
-      </div>
+        <Label size="large" >Şehir</Label>
+        <p></p>
+        <Dropdown
+          placeholder="Şehir seçiniz"
+          selection
+          search
+          multiple
+          clearable
+          options={cities.map((city, index) => {
+            return { text: city.cityName, key: city.index, value: city.id }
+          })}
+          onChange={handleCityChange}
+          value={selectedCity}
+        />
+      </Segment>
 
-      <div className="myBox">
-        <Segment as="h3">Pozisyon</Segment>
-        <Segment.Group as="h3" attached="top">
-          <select style={{ width: "200px", height: "30px" }} value={selectedJobPosition} onChange={handleJobPositionChange}>
-            <option value="">Tümü</option>
-            {jobPositions.map((position) => (
-              <option key={position.id} value={position.jobName}>
-                {position.jobName}
-              </option>
-            ))}
-          </select>
-        </Segment.Group>
-        <Button color="green" style={{ width: 260, fontSize: 14, padding: "8px 16px" }} onClick={handleApplyFilter}>
-          Filtrele
-        </Button>
+      <Segment color=" " raised style={{ textAlign: 'left' }}>
+        <Label size="large">İş Pozisyonu</Label>
+        <p></p>
+        <Dropdown
+          placeholder="İş Pozisyonu seçiniz"
+          selection
+          search
+          multiple
+          clearable
+          options={jobPositions.map((jobPosition) =>
+            ({ text: jobPosition.jobName, key: jobPosition.id, value: jobPosition.jobName })
+          )}
+          onChange={handleJobPositionChange}
+          value={selectedJobPosition}
+        />
+      </Segment>
 
-      </div>
+      <Segment color=" " raised style={{ textAlign: 'left' }}>
+        <Label size="large">Çalışma Şekli</Label><p></p>
+        <Dropdown
+          placeholder="Çalışma Şekli seçiniz"
+          selection
+          search
+          multiple
+          clearable
+          options={workTimes.map((workTime) =>
+            ({ text: workTime.name, key: workTime.id, value: workTime.name })
+          )}
+          onChange={(e, { value }) => handleWorkTypeChange(value)}
+          value={selectedWorkTypes}
+        />
+      </Segment>
+
+  
+
+      <Button color="green" style={{ width: 260, fontSize: 14, padding: "8px 16px" }} onClick={handleApplyFilter}>
+        Filtrele
+      </Button>
     </div>
+
   );
 }

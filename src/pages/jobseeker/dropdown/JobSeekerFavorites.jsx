@@ -1,66 +1,64 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Table, Button, Container } from 'semantic-ui-react';
+import { Table, Container } from 'semantic-ui-react';
+import { useSelector } from 'react-redux';
+import FavoriServis from '../../../services/FavoriService';
+import HrmsModalDeleteButton from '../../../utilities/customFormControls/HrmsModalDeleteButton';  
+import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom'; 
 
 const JobSeekerFavorites = () => {
+  const jobSeeker = useSelector((state) => state.auth.jobSeeker);
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/api/favori/getFavoriteByIsArayanId?id=6');
-        setFavorites(response.data.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    let favoriService = new FavoriServis();
+    favoriService.getFavoriteByJobSeekerId(jobSeeker.id).then((result) => setFavorites(result.data.data));
+  }, [jobSeeker.id]);
 
-    fetchData();
-  }, []);
+  const handleDeleteClick = (id) => {
+    let favoriService = new FavoriServis();
+    favoriService.deleteFavorite(id)
+      .then(result => toast.success(result.data.message))
+      .catch(error => toast.error("İşlem tamamlanamadı"));
 
-  const handleDelete = async (id) => {
-    try {
-      // Favoriyi silmek için isteği burada gerçekleştirin
-      await axios.delete(`http://localhost:8080/api/favori/deleteFavoriteById?id=${id}`);
-      setFavorites(favorites.filter((favorite) => favorite.id !== id));
-      console.log('Favori başarıyla silindi.');
-    } catch (error) {
-      console.error(error);
-    }
+    let newList = favorites.filter(favori => favori.id !== id);
+    setFavorites(newList);
   };
 
   return (
     <div>
-       <Container style={{ marginTop: '3em' }} textAlign="center">
-      <h1>favorilerin</h1>
-      
-      <Table celled>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Favorite ID</Table.HeaderCell>
-            <Table.HeaderCell>Job Advertisement Explanation</Table.HeaderCell>
-            <Table.HeaderCell>Job Position</Table.HeaderCell>
-            <Table.HeaderCell>Employer Company Name</Table.HeaderCell>
-            <Table.HeaderCell>Actions</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
+      <Container style={{ height: '50vh', marginTop: '10px' }} verticalAlign='middle'>
+        <h1>Favorilerin</h1>
 
-        <Table.Body>
-          {favorites.map((favorite) => (
-            <Table.Row key={favorite.id}>
-              <Table.Cell>{favorite.id}</Table.Cell>
-              <Table.Cell>{favorite.jobAdvertisement.explanation}</Table.Cell>
-              <Table.Cell>{favorite.jobAdvertisement.jobPosition.jobName}</Table.Cell>
-              <Table.Cell>{favorite.jobAdvertisement.employer.companyName}</Table.Cell>
-              <Table.Cell>
-                <Button color="red" onClick={() => handleDelete(favorite.id)}>
-                  Delete
-                </Button>
-              </Table.Cell>
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>İlan Açıklaması</Table.HeaderCell>
+              <Table.HeaderCell>İş Pozisyonu</Table.HeaderCell>
+              <Table.HeaderCell>İşveren Şirket Adı</Table.HeaderCell>
+              <Table.HeaderCell>İşlemler</Table.HeaderCell>
             </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
+          </Table.Header>
+
+          <Table.Body>
+            {favorites.map((favorite) => (
+              <Table.Row key={favorite.id}>
+                <Table.Cell>{favorite.jobAdvertisement.explanation}</Table.Cell>
+                <Table.Cell>{favorite.jobAdvertisement.jobPosition.jobName}</Table.Cell>
+                <Table.Cell>
+                  <Link to={`/employer/${favorite.jobAdvertisement.employer.id}`}>
+                    {favorite.jobAdvertisement.employer.companyName}
+                  </Link>
+                </Table.Cell>
+                <Table.Cell>
+                  <HrmsModalDeleteButton back={true} onClick={() => handleDeleteClick(favorite.id)}>
+                    Sil
+                  </HrmsModalDeleteButton>
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
       </Container>
     </div>
   );

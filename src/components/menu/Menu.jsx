@@ -7,7 +7,7 @@ import EmployerDropdown from "../menu/dropdowns/EmployerDropdown";
 
 const CustomMenu = () => {
   const history = useHistory();
-  const { isArayanLoggedIn, isgverenLoggedIn } = useSelector(
+  const { jobseekerLoggedIn, employerLoggedIn } = useSelector(
     (state) => state.auth
   );
 
@@ -20,7 +20,7 @@ const CustomMenu = () => {
   };
 
   return (
-    <Menu secondary style={{ backgroundColor: "#019AA9" }} className="menu">
+    <Menu secondary style={{ backgroundColor: "#0473cb" }} className="menu">
       <Container position="right">
         <Menu.Item>
           <div>
@@ -37,28 +37,32 @@ const CustomMenu = () => {
           as={NavLink}
           to="/home"
           icon="home"
-          content="ANA SAYFA"
+          style={{ color: "white" }}
+          content={<span style={{ color: "white" }}>Ana Sayfa</span>}
           color="black"
         />
         <Menu.Item
           as={NavLink}
           to="/jobAdvertisements"
           icon="bullhorn"
-          content="İLANLAR"
+          style={{ color: "white" }}
+          content={<span style={{ color: "white" }}>İlanlar</span>}
           color="black"
         />
         <Menu.Item
           as={NavLink}
           to="/isPozisyonlari"
           icon="list alternate"
-          content="POZİSYONLAR"
+          style={{ color: "white" }}
+          content={<span style={{ color: "white" }}>İş Pozisyonları</span>}
           color="black"
         />
 
+
         <Menu.Item position="right">
-          {isgverenLoggedIn || isArayanLoggedIn ? (
+          {employerLoggedIn || jobseekerLoggedIn ? (
             <>
-              {isgverenLoggedIn && (
+              {employerLoggedIn && (
                 <Menu.Item>
                   <Dropdown text="İşveren" pointing>
                     <Dropdown.Menu>
@@ -68,7 +72,7 @@ const CustomMenu = () => {
                 </Menu.Item>
               )}
 
-              {isArayanLoggedIn && (
+              {jobseekerLoggedIn && (
                 <Menu.Item>
                   <Dropdown text="İş Arayan" pointing>
                     <Dropdown.Menu>
@@ -81,7 +85,7 @@ const CustomMenu = () => {
           ) : (
             <>
               <Menu.Item style={{ marginLeft: "12em" }}>
-                <Button color="black">
+                <Button color="#185e86" style={{ color: "#022440" }}>
                   <Dropdown text="Giriş Yap">
                     <Dropdown.Menu>
                       <Dropdown.Item onClick={handleIsgverenClick}>
@@ -93,10 +97,8 @@ const CustomMenu = () => {
                     </Dropdown.Menu>
                   </Dropdown>
                 </Button>
-             
-              
-                <Button color="black"  style={{ marginLeft: "0.5em" }} >
-                  <Dropdown text="Kayıt ol">
+                <Button color="#0b4668" style={{ marginLeft: "0.5em", color: "#022440" }}>
+                  <Dropdown text="Kayıt Ol">
                     <Dropdown.Menu>
                       <Link to="/employerregister">
                         <Dropdown.Item>İşveren Kayıt</Dropdown.Item>
@@ -117,114 +119,3 @@ const CustomMenu = () => {
 };
 
 export default CustomMenu;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React from "react";
-// import { Container, Menu } from "semantic-ui-react";
-// import { Link, NavLink } from "react-router-dom";
-// import { useSelector, useDispatch } from "react-redux";
-// import { userLogout, userLogin } from "../../store/actions/authActions";
-// import SignedIn from "./SignedIn";
-// import SignedOut from "./SignedOut";
-
-// export default function Menü() {
-//   const isAuthenticated = useSelector((state) => state.auth.authItem[0].loggedIn);
-//   const dispatch = useDispatch();
-
-//   function handleSignOut() {
-//     dispatch(userLogout());
-//   }
-
-//   function handleSignIn() {
-//     dispatch(userLogin({ id: 1, userType: 1 }));
-//   }
-
-//   return (
-//     <div>
-//       <Menu secondary style={{ backgroundColor: "#019AA9" }} className="menu">
-//         <Container position="right">
-//           <Menu.Item>
-//             <div>
-//               <Link to="/home">
-//                 <img
-//                   src="https://res.cloudinary.com/dztwwdpj9/image/upload/v1678226359/ikyss_y6ptkh.png"
-//                   alt="logo"
-//                   className="logo"
-//                 />
-//               </Link>
-//             </div>
-//           </Menu.Item>
-//           <Menu.Item
-//             as={NavLink}
-//             to="/home"
-//             icon="home"
-//             content="ANA SAYFA"
-//             color="black"
-//           />
-//           <Menu.Item
-//             as={NavLink}
-//             to="/jobAdvertisements"
-//             icon="bullhorn"
-//             content="İLANLAR"
-//             color="black"
-//           />
-//           <Menu.Item
-//             as={NavLink}
-//             to="/isPozisyonlari"
-//             icon="list alternate"
-//             content="POZİSYONLAR"
-//             color="black"
-//           />
-//           <Menu.Menu position="right">
-//             {isAuthenticated ? (
-//               <Menu.Item>
-//                 <SignedIn signOut={handleSignOut} />
-//               </Menu.Item>
-//             ) : null}
-//             {!isAuthenticated ? (
-//               <Menu.Item>
-//                 <SignedOut signIn={handleSignIn} />
-//               </Menu.Item>
-//             ) : null}
-//           </Menu.Menu>
-//         </Container>
-//       </Menu>
-//     </div>
-//   );
-// }

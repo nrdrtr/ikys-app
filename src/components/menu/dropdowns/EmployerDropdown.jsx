@@ -5,9 +5,11 @@ import { Dropdown } from 'semantic-ui-react';
 import { logoutUser } from '../../../store/actions/authActions';
 
 export default function EmployerDropdown() {
+
+  const employer = useSelector(state => state.auth.employer); 
+  const id = employer ? employer.id : null;
   const dispatch = useDispatch();
   const history = useHistory();
-  const userId = useSelector(state => state.auth.userId); // Get the user ID from the Redux store
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -15,20 +17,21 @@ export default function EmployerDropdown() {
   };
 
   return (
-    <div backgroundColor="blue">
-      <Link to={`/employerAccount/${userId}`}>
-        <Dropdown.Item text="bilgilerim" icon="info" backgroundColor="blue"/>
-      </Link>
-
-      <Link to="/employeralerts">
-        <Dropdown.Item text="bildirimlerim" icon="info" />
+    <div  >
+      <Link to={`/employeraccount/${id}`}>
+        <Dropdown.Item text="bilgilerim" icon="info" style={{ backgroundColor: 'white' }}/>
       </Link>
 
       <Link to="/employerjobadvertisements">
-        <Dropdown.Item text="ilanlarım" icon="info" backgroundColor="blue"/>
+        <Dropdown.Item text="ilanlarım" icon="info" style={{ backgroundColor: 'white' }}/>
       </Link>
 
-      <Dropdown.Item text="Çıkış Yap" icon="sign-out" onClick={handleLogout} />
+      <Link to="/employeralerts">
+        <Dropdown.Item text="bildirimlerim" icon="info"  style={{ backgroundColor: 'white' }}/>
+      </Link>
+
+
+      <Dropdown.Item text="Çıkış Yap" icon="sign-out" onClick={handleLogout} style={{ backgroundColor: 'white' }} />
     </div>
   )
 }

@@ -2,13 +2,28 @@ import axios from "axios";
 
 export default class EmployerService{
 
-    add(values) {
+    registerEmployer(values) {
         return axios.post("http://localhost:8080/api/employer/save", values);
     }
 
     getByEmployerId(id) {
-        return axios.get(`http://localhost:8080/api/employer/getById/33`);
-    }                    //http://localhost:8080/api/employer/getById?id=${id}
+        return axios.get(`http://localhost:8080/api/employer/getById/${id}`);
+    } 
+    
+
+    async updateEmployer(employerId, formData) {
+        try {
+            const response = await axios.put(`http://localhost:8080/api/employer/update/${employerId}`, formData);
+            return response.data;
+        } catch (error) {
+            throw error.response.data;
+        }
+      }
+      
+        getJobAdvertisementsByEmployerId(employerId) {//http://localhost:8080/api/jobAdvertisements/getByEmployerId?employerId=33
+            return axios.get(`http://localhost:8080/api/jobAdvertisements/getByEmployerId?employerId=${employerId}`);
+        }
+
 
     
     

@@ -1,91 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Container, Form, Input, Button } from 'semantic-ui-react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import EmployerService from '../../../services/EmployerService';
-import { Container } from 'semantic-ui-react';
+import AddToImage from '../../../components/addToImage';
+ 
 
 export default function UpdateEmployerAccount() {
   const history = useHistory();
+  const employer = useSelector((state) => state.auth.employer);
 
-  const [employer, setEmployer] = useState({
+  const [employerData, setEmployerData] = useState({
     email: '',
     companyName: '',
     website: '',
     phoneNumber: '',
-    userId: '',
   });
+
+  useEffect(() => {
+    setEmployerData(employer);
+  }, [employer]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEmployer((prevState) => ({
+    setEmployerData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let employerService = new EmployerService();
-    employerService.updateEmployer(employer).then((result) => {
-      // Handle success or error case
-      // You can redirect to another page or display a notification message
-      history.push('/employer-account');
-    });
+
+    try {
+      const result = await employerService.updateEmployer(employer.id, employerData);
+      
+        toast.success('Profil güncellendi.');
+        history.push(`/employeraccount/${employer.id}`);
+                            
+    } catch (error) {
+      console.error(error);
+     
+    }
   };
 
   return (
-    <Container>
-    <div className="container">
-      <div className="row">
-        <div className="col-md-8 offset-md-2">
-          <h2>Update Employer Account</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Email</label>
-              <input
-                type="email"
-                className="form-control"
-                name="email"
-                value={employer.email}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Company Name</label>
-              <input
-                type="text"
-                className="form-control"
-                name="companyName"
-                value={employer.companyName}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Website</label>
-              <input
-                type="text"
-                className="form-control"
-                name="website"
-                value={employer.website}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Phone Number</label>
-              <input
-                type="text"
-                className="form-control"
-                name="phoneNumber"
-                value={employer.phoneNumber}
-                onChange={handleChange}
-              />
-            </div>
-            <button type="submit" className="btn btn-primary">
-              Update
-            </button>
-          </form>
+    <Container style={{ height: '75vh', marginTop: '15px' }}>
+      <div className="container">
+        <div className="row">
+          <div className="col-md-8 offset-md-2">
+            <h2>Hesabını Güncelle</h2>
+            <AddToImage id ={employer.id}/>
+            <Form onSubmit={handleSubmit}>
+              <Form.Field>
+                <label>E-posta</label>
+                <Input type="email" name="email" value={employerData.email} onChange={handleChange} />
+              </Form.Field>
+              <Form.Field>
+                <label>Şirket Adı</label>
+                <Input
+                  type="text"
+                  name="companyName"
+                  value={employerData.companyName}
+                  onChange={handleChange}
+                />
+              </Form.Field>
+              <Form.Field>
+                <label>Web Sitesi</label>
+                <Input type="text" name="website" value={employerData.website} onChange={handleChange} />
+              </Form.Field>
+              <Form.Field>
+                <label>Telefon Numarası</label>
+                <Input
+                  type="text"
+                  name="phoneNumber"
+                  value={employerData.phoneNumber}
+                  onChange={handleChange}
+                />
+              </Form.Field>
+              <Button primary type="submit">
+                Güncelle
+              </Button>
+              <ToastContainer />
+            </Form>
+          </div>
         </div>
       </div>
-    </div>
     </Container>
   );
 }

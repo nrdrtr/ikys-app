@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Container, Pagination, Button } from 'semantic-ui-react';
+import { Card, Container, Pagination, Button, Grid } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import JobPositionService from '../../services/JobPositionService';
@@ -9,10 +9,7 @@ function JobPositionList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const { isgverenLoggedIn } = useSelector(
-    (state) => state.auth
-  );
- 
+  const { employerLoggedIn } = useSelector((state) => state.auth);
 
   useEffect(() => {
     let jobPositionService = new JobPositionService();
@@ -30,23 +27,25 @@ function JobPositionList() {
     setCurrentPage(activePage);
   }
 
-
   return (
     <div>
       <Container textAlign="center">
-        {isgverenLoggedIn && (
-          <Button
-            as={Link}
-            to="/add-job-position"
-            floated="right"
-            primary
-            style={{ marginTop: '10px', marginRight: '10px' }}
-          >
-            Add Position
-          </Button>
-        )}
+        <Grid columns={1} stackable>
+          <Grid.Column textAlign="left">
+            {employerLoggedIn && (
+              <Button
+                as={Link}
+                to="/add-job-position"
+                color="green"
+                style={{ marginBottom: '10px' }}
+              >
+                İş Pozisyonu Ekle
+              </Button>
+            )}
+          </Grid.Column>
+
+        </Grid>
       </Container>
-      <br />
 
       <Container textAlign="center">
         <Card.Group itemsPerRow={3}>
@@ -59,16 +58,15 @@ function JobPositionList() {
             />
           ))}
         </Card.Group>
-      </Container>
-
-      <Container textAlign="center">
-        <Pagination
-          activePage={currentPage}
-          onPageChange={handlePageChange}
-          totalPages={totalPages}
-          pointing
-          secondary
-        />
+        <Grid.Column textAlign="right">
+          <Pagination
+            activePage={currentPage}
+            onPageChange={handlePageChange}
+            totalPages={totalPages}
+            pointing
+            secondary
+          />
+        </Grid.Column>
       </Container>
     </div>
   );

@@ -1,67 +1,58 @@
-const initialState = {
-  isArayanLoggedIn: false,
-  isgverenLoggedIn: false,
-  userId: null,
-  error: null,
-};
+import {
+  ISARAYAN_LOGIN_FAILURE,
+  ISARAYAN_LOGIN_SUCCESS,
+  ISVEREN_LOGIN_FAILURE,
+  ISVEREN_LOGIN_SUCCESS,
+  LOGIN_REQUEST,
+  LOGOUT_USER
+} from "../types";
 
+const initialState = {
+  loading: false,
+  jobseekerLoggedIn: false,
+  employerLoggedIn: false,
+  error: null,
+  jobSeeker: null,
+  employer: null,
+};
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "ISARAYAN_LOGIN_SUCCESS":
+    case LOGIN_REQUEST:
       return {
         ...state,
-        isArayanLoggedIn: true,
-        isgverenLoggedIn: false,
-        userId: action.payload.userId,
+        loading: true,
         error: null,
       };
-    case "ISARAYAN_LOGIN_FAILURE":
+    case ISARAYAN_LOGIN_SUCCESS:
       return {
         ...state,
-        isArayanLoggedIn: false,
-        isgverenLoggedIn: false,
-        userId: null,
+        loading: false,
+        jobseekerLoggedIn: true,
+        employerLoggedIn: false,
+        jobSeeker: action.payload,
+      };
+    case ISVEREN_LOGIN_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        jobseekerLoggedIn: false,
+        employerLoggedIn: true,
+        employer: action.payload,
+      };
+    case ISARAYAN_LOGIN_FAILURE:
+    case ISVEREN_LOGIN_FAILURE:
+      return {
+        ...state,
+        loading: false,
         error: action.payload,
       };
-    case "ISGVEREN_LOGIN_SUCCESS":
+    case LOGOUT_USER:
       return {
         ...state,
-        isArayanLoggedIn: false,
-        isgverenLoggedIn: true,
-        userId: null,
-        error: null,
-      };
-    case "ISGVEREN_LOGIN_FAILURE":
-      return {
-        ...state,
-        isArayanLoggedIn: false,
-        isgverenLoggedIn: false,
-        userId: null,
-        error: action.payload,
-      };
-    case "REGISTER_SUCCESS":
-      return {
-        ...state,
-        isArayanLoggedIn: true, // Varsayılan olarak giriş yapıldı olarak işaretle
-        isgverenLoggedIn: false,
-        userId: action.payload.userId,
-        error: null,
-      };
-    case "REGISTER_FAIL":
-      return {
-        ...state,
-        isArayanLoggedIn: false,
-        isgverenLoggedIn: false,
-        userId: null,
-        error: action.payload,
-      };
-    case "LOGOUT_USER":
-      return {
-        ...state,
-        isArayanLoggedIn: false,
-        isgverenLoggedIn: false,
-        userId: null,
-        error: null,
+        jobSeeker: null,
+        employer: null,
+        jobseekerLoggedIn: false,
+        employerLoggedIn: false,
       };
     default:
       return state;

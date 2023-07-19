@@ -1,184 +1,135 @@
-import React, { useState } from "react";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import {  useHistory } from "react-router-dom";
-import {
-  MDBBtn,
-  MDBContainer,
-  MDBRow,
-  MDBCol,
-  MDBCard,
-  MDBCardBody,
-  MDBCardImage,
-  MDBInput,
-  MDBIcon
-} from "mdb-react-ui-kit";
-import { Container } from "semantic-ui-react";
-//import EmployerService from "../../../services/EmployerService";
+import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useHistory } from 'react-router-dom';
+import EmployerService from './../../../services/EmployerService';
+import { MDBBtn, MDBContainer, MDBCard, MDBCardBody, MDBInput, MDBRow, MDBCol } from 'mdb-react-ui-kit';
 
-export default function EmployerRegister() {
-  const [companyName, setCompanyName] = useState("");
-  const [website, setWebsite] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordAgain, setPasswordAgain] = useState("");
-
+function EmployerRegister() {
   const history = useHistory();
-  // const [formData, setFormData] = useState({
-  //   name: "",
-  //   surname: "",
-  //   birthDate: "",
-  //   identityNumber: "",
-  //   password: "",
-  //   passwordAgain: "",
-  //   email: ""
-  // });
+  const [formData, setFormData] = useState({
+    companyName: '',
+    website: '',
+    email: '',
+    phoneNumber: '',
+    password: '',
+    passwordAgain: ''
+  });
 
-  // const handleChange = (e) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     let employerService = new EmployerService();
-  //     let response = await employerService.add(formData);
-
-  //     console.log(response); // Print successful response to the console
-  //     // Perform additional actions or redirect after successful operation
-  //     history.push("/email-sent"); // Redirect to EmailSentPage
-  //   } catch (error) {
-  //     console.error(error); // Print error message to the console in case of an error
-  //     // Perform error handling or display error message to the user
-  //   }
-  // };
-
-  const handleRegister = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      !companyName ||
-      !website ||
-      !email ||
-      !phoneNumber ||
-      !password ||
-      !passwordAgain
-    ) {
-      toast.error("Lütfen tüm alanları doldurunuz.");
-    } else if (password !== passwordAgain) {
-      toast.error("Şifreler eşleşmiyor.");
-    } else {
-      history.push("/checkemailpage"); // Redirect to CheckEmailPage
+    try {
+      let employerService = new EmployerService();
+      let response = await employerService.registerEmployer(formData);
+      console.log(response);
+
+      if (response && response.status === 201) {
+        toast.success('Kayıt işlemi başarılı oldu! Lütfen e-posta adresinize gönderilen aktivasyon linkine tıklayarak hesabınızı aktifleştirin.');
+        history.push('/email-sent');
+      } else {
+        toast.error('Kayıt işlemi başarısız oldu.');
+      }
+
+    } catch (error) {
+      console.error(error);
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Bir hata oluştu.');
+      }
     }
   };
 
   return (
-    <Container style={{ marginTop: "50px" }}>
-      <MDBContainer fluid>
-        <MDBCard className="text-black m-5" style={{ borderRadius: "25px" }}>
-          <MDBCardBody>
-            <MDBRow>
-              <MDBCol
-                md="10"
-                lg="6"
-                className="order-2 order-lg-1 d-flex flex-column align-items-center"
-              >
-                <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
-                  İşveren Kayıt
-                </p>
-
-                <div className="d-flex flex-row align-items-center mb-4 ">
-                  <MDBIcon fas icon="user me-3" size="lg" />
-                  <MDBInput
-                    label="Şirket Adı"
-                    id="companyName"
-                    type="text"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                  />
-                </div>
-
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <MDBIcon fas icon="globe me-3" size="lg" />
-                  <MDBInput
-                    label="Website"
-                    id="website"
-                    type="text"
-                    value={website}
-                    onChange={(e) => setWebsite(e.target.value)}
-                  />
-                </div>
-
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <MDBIcon fas icon="envelope me-3" size="lg" />
-                  <MDBInput
-                    label="E-posta"
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <MDBIcon fas icon="phone me-3" size="lg" />
-                  <MDBInput
-                    label="Telefon Numarası"
-                    id="phoneNumber"
-                    type="text"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                  />
-                </div>
-
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <MDBIcon fas icon="lock me-3" size="lg" />
-                  <MDBInput
-                    label="Şifre"
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <MDBIcon fas icon="key me-3" size="lg" />
-                  <MDBInput
-                    label="Şifre Tekrar"
-                    id="passwordAgain"
-                    type="password"
-                    value={passwordAgain}
-                    onChange={(e) => setPasswordAgain(e.target.value)}
-                  />
-                </div>
-
-                <div className="mb-4"></div>
-                <MDBBtn
-                  type="submit"
-                  className="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm"
-                  onClick={handleRegister}
-                >
-                  Kayıt Ol
-                </MDBBtn>
+    <MDBContainer fluid className='d-flex align-items-center justify-content-center bg-image'>
+      <div className='mask gradient-custom-3'>
+        <h2 className="text-center mb-5">İşveren Kayıt Ol</h2>
+      </div>
+      <MDBCard className='m-5' style={{ maxWidth: '800px' }}>
+        <MDBCardBody className='px-5'>
+          <form onSubmit={handleSubmit}>
+            <MDBRow className='mb-4'>
+              <MDBCol size='6'>
+              <p htmlFor='name' style={{ textAlign: 'left' ,marginBottom: '0px', color:'black'}}>Şirket Adı</p>
+                <MDBInput
+                 
+                  size='lg'
+                  id='companyName'
+                  type='text'
+                  name='companyName'
+                  value={formData.companyName}
+                  onChange={handleChange}
+                />
               </MDBCol>
-              <MDBCol
-                md="10"
-                lg="6"
-                className="order-1 order-lg-2"
-                style={{ borderRadius: "25px" }}
-              >
-                <MDBCardImage
-                  src="https://mdbootstrap.com/img/Photos/Others/images/43.jpg"
-                  alt="..."
-                  fluid
-                  style={{ borderRadius: "25px" }}
+              <MDBCol size='6'>
+              <p htmlFor='name' style={{ textAlign: 'left' ,marginBottom: '0px', color:'black'}}>Web Adresi</p>
+                <MDBInput
+                 
+                  size='lg'
+                  id='website'
+                  type='text'
+                  name='website'
+                  value={formData.website}
+                  onChange={handleChange}
                 />
               </MDBCol>
             </MDBRow>
-          </MDBCardBody>
-        </MDBCard>
-      </MDBContainer>
-    </Container>
+            <p htmlFor='email' style={{ textAlign: 'left' ,marginBottom: '0px', color:'black'}}>E-Posta Adresiniz</p>
+            <MDBInput
+              wrapperClass='mb-4'
+             
+              size='lg'
+              id='email'
+              type='email'
+              name='email'
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <p htmlFor='phoneNumber' style={{ textAlign: 'left' ,marginBottom: '0px', color:'black'}}>Telefon Numaranız</p>
+            <MDBInput
+              wrapperClass='mb-4'
+              
+              size='lg'
+              id='phoneNumber'
+              type='text'
+              name='phoneNumber'
+              value={formData.phoneNumber}
+              onChange={handleChange}
+            />
+            <p htmlFor='password' style={{ textAlign: 'left' ,marginBottom: '0px', color:'black'}}>Hesap Şifreniz</p>
+            <MDBInput
+              wrapperClass='mb-4'
+            
+              size='lg'
+              id='password'
+              type='password'
+              name='password'
+              value={formData.password}
+              onChange={handleChange}
+            />
+            <p htmlFor='passwordAgain' style={{ textAlign: 'left' ,marginBottom: '0px', color:'black'}}>Hesap Şifreniz (Tekrar)</p>
+            <MDBInput
+              wrapperClass='mb-4'
+            
+              size='lg'
+              id='passwordAgain'
+              type='password'
+              name='passwordAgain'
+              value={formData.passwordAgain}
+              onChange={handleChange}
+            />
+            <MDBBtn className='mb-4 w-100 gradient-custom-4' size='lg' type='submit'>Kayıt Ol</MDBBtn>
+          </form>
+          Hesabın var mı? <a href='/jobseeker/login'>Giriş Yap</a>
+        </MDBCardBody>
+      </MDBCard>
+      <ToastContainer />
+    </MDBContainer>
   );
 }
+
+export default EmployerRegister;

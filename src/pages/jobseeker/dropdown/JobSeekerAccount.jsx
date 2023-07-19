@@ -1,40 +1,133 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
-import { Card, Icon, Image } from 'semantic-ui-react';
-import JobSeekerService from './../../../services/JobSeekerService';
+import { useSelector } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+import ImageService from '../../../services/ImageService';
+import { Button, Container, Form, Icon, Input } from 'semantic-ui-react';
+import AddToImage from './../../../components/addToImage';
 
 export default function JobSeekerAccount() {
-  let { id } = useParams();
-
-  const [employee, setEmployee] = useState({
-    name: "John",
-    surname: "Doe",
-    email: "john.doe@example.com",
-    birthDate: "01/01/1990",
-    identityNumber: "1234567890",
-    profileImage:  "https://pbs.twimg.com/profile_images/1630252256300761088/Rjdh5uDd_400x400.jpg"
+  const jobSeeker = useSelector((state) => state.auth.jobSeeker);
+  const imageService = new ImageService();
+  const [loading, setLoading] = useState(false);
+  const [jobSeekerImage, setJobSeekerImage] = useState(null);
+  const [formData, setFormData] = useState({
+    name: jobSeeker.name,
+    surname: jobSeeker.surname,
+    email: jobSeeker.email,
+    identityNumber: jobSeeker.identityNumber,
+    birthDate: jobSeeker.birthDate
   });
 
   useEffect(() => {
-    let employeeService = new JobSeekerService();
-    employeeService.getById(id).then((result) => setEmployee(result.data.data));
-  }, [id]);
+    const fetchJobSeekerImage = async () => {
+      try {
+        const response = await imageService.getByUserId(jobSeeker.id);
+        if (response.data && response.data.data.imageUrl) {
+          setJobSeekerImage(response.data.data.imageUrl);
+        } else {
+          setJobSeekerImage('https://www.w3schools.com/howto/img_avatar.png');
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchData = async () => {
+      await fetchJobSeekerImage();
+    };
+
+    fetchData();
+  }, [jobSeeker.id]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value
+    }));
+  };
+
+  const handleUpdateProfile = (e) => {
+    e.preventDefault();
+    // Güncelleme işlemleri burada gerçekleştirilebilir
+    console.log("Profil güncellendi:", formData);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  const renderJobSeekerImage = () => {
+    if (jobSeekerImage) {
+      return <img src={jobSeekerImage} alt="Job Seeker Avatar" className="rounded-circle img-fluid" />;
+    } else {
+      return <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Default Avatar" className="rounded-circle img-fluid" />;
+    }
+  };
 
   return (
-    <div style={{ width: '400px' }} >
-      <Card  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Image src={employee.profileImage} wrapped ui={false} />
-        <Card.Content>
-          <Card.Header>{employee.name} {employee.surname}</Card.Header>
-          <Card.Meta>{employee.email}</Card.Meta>
-          <Card.Description>
-            <p>Birth Date: {employee.birthDate}</p>
-            <p>
-              <Icon name='user' /> Identity Number: {employee.identityNumber}
-            </p>
-          </Card.Description>
-        </Card.Content>
-      </Card>
-    </div>
+    <Container style={{ height: '100vh', marginTop: '10px', width :'30%'}}>
+      <h2>Hesabını Güncelle</h2>
+      <p></p>
+       
+      <Form  >
+        <AddToImage></AddToImage>
+      </Form  >
+
+      <div style={{ display: 'flex', justifyContent: 'space-around'}}>
+    <Form>
+      <Form.Field>
+        <label htmlFor="name" style={{ textAlign: 'left', color: 'black' }}>Adı:</label>
+        <Input type="text" id="name" name="name" onChange={handleInputChange} />
+      </Form.Field>
+    </Form>
+    <Form>
+      <Form.Field>
+        <label htmlFor="file" style={{ textAlign: 'left', color: 'black' }}>Soyadı:</label>
+        <Input type="text" id="surname" name="surname" onChange={handleInputChange} />
+      </Form.Field>
+    </Form>
+  </div>
+
+  
+      <Form>
+        <Form.Field  >
+          <label htmlFor="file" style={{ textAlign: 'left', color: 'black' }}>Doğum Tarihi:</label>
+          <Input type='date'    id="name" name="name"   onChange={handleInputChange} />
+        </Form.Field>
+      </Form>
+      <Form>
+        <Form.Field  >
+          <label htmlFor="file" style={{ textAlign: 'left', color: 'black' }}>E Posta:</label>
+          <Input type="mail"   id="name" name="name"   onChange={handleInputChange} />
+        </Form.Field>
+      </Form>
+      <Form>
+        <Form.Field  >
+          <label htmlFor="file" style={{ textAlign: 'left', color: 'black' }}>T.C. Kimlik Numarası:</label>
+          <Input type="text"   id="name" name="name"   onChange={handleInputChange} />
+        </Form.Field>
+      </Form>
+      <Form>
+        <Form.Field  >
+          <label htmlFor="file" style={{ textAlign: 'left', color: 'black' }}>Şifre:</label>
+          <Input type='password'    id="name" name="name"   onChange={handleInputChange} />
+        </Form.Field>
+      </Form>
+      <Form>
+        <Form.Field  >
+          <label htmlFor="file" style={{ textAlign: 'left', color: 'black' }}>Şifre Tekrar:</label>
+          <Input type='password'   id="name" name="name"   onChange={handleInputChange} />
+        </Form.Field>
+      </Form>
+<p></p>
+      <ToastContainer />
+      <Button   type="submit" color="green" onClick={handleUpdateProfile}>
+      Güncelle
+     </Button>
+    </Container>
+
+
   );
 }

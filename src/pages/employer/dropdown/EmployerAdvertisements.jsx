@@ -1,58 +1,81 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Table } from 'semantic-ui-react';
+import { Container, Table, Button } from 'semantic-ui-react';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 
-export default function EmployerAdvertisements() {
+const EmployerAdvertisements = () => {
   const [advertisements, setAdvertisements] = useState([]);
+  const employer = useSelector((state) => state.auth.employer);
+  const history = useHistory();
+
+  const fetchAdvertisements = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/jobAdvertisements/getByEmployerId?employerId=${employer.id}`);
+      setAdvertisements(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/api/jobAdvertisements/getByEmployerId?employerId=2');
-        setAdvertisements(response.data.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    fetchAdvertisements();
+  }, [employer.id]);
 
-    fetchData();
-  }, []);
+  const handleCreateAdvertisement = () => {
+    history.push('/jobadvertisementAdd');
+  };
 
-  // const handleDelete = async (id) => {
-  //   try {
-  //     // Reklamı silmek için isteği burada gerçekleştirin
-  //     await axios.delete(`http://localhost:8080/api/jobAdvertisements/deleteAdvertisementById?id=${id}`);
-  //     setAdvertisements(advertisements.filter((advertisement) => advertisement.id !== id));
-  //     console.log('Reklam başarıyla silindi.');
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  const setStatus = async (jobAdvertisementId, employerId, status) => {
+    try {
+      await axios.post(
+        `http://localhost:8080/api/jobAdvertisements/setStatus?jobAdvertisementId=${jobAdvertisementId}&employerId=${employerId}&status=${status}`
+      );
+      fetchAdvertisements();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-    <div>
-      <Link to="/jobadvertisementAdd">
-        <Button floated="right" primary style={{ marginTop: '10px', marginRight: '10px' }}>
-          Add Position
-        </Button>
-      </Link>
-
+    <Container style={{ height: '120vh', backgroundColor: "#FBF7E4" }}>
+      <h3>İlanlarım</h3>
       <Table celled>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell>Job Title</Table.HeaderCell>
-            <Table.HeaderCell>Description</Table.HeaderCell>
-            <Table.HeaderCell>Salary</Table.HeaderCell>
-            <Table.HeaderCell>Actions</Table.HeaderCell>
+            <Table.HeaderCell>İş Pozisyonu</Table.HeaderCell>
+            <Table.HeaderCell>Açıklama</Table.HeaderCell>
+            <Table.HeaderCell>Bitiş Tarihi</Table.HeaderCell>
+            <Table.HeaderCell>Durum</Table.HeaderCell>
+            <Table.HeaderCell>İşlem</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
         <Table.Body>
-          
-         
+          {advertisements.map((advertisement) => (
+            <Table.Row key={advertisement.id}>
+              <Link to={`/jobAdvertisements/getById/${advertisement.id}`}>
+                <Table.Cell>{advertisement.jobPosition.jobName}</Table.Cell>
+              </Link>
+              <Table.Cell>{advertisement.explanation}</Table.Cell>
+              <Table.Cell>{advertisement.endDate}</Table.Cell>
+              <Table.Cell>{advertisement.active ? 'Aktif' : 'Pasif'}</Table.Cell>
+              <Table.Cell>
+                <Button
+                  onClick={() => setStatus(advertisement.id, employer.id, !advertisement.active)}
+                  color={advertisement.active ? 'red' : 'green'}
+                  content={advertisement.active ? 'Pasifleştir' : 'Etkinleştir'}
+                />
+              </Table.Cell>
+            </Table.Row>
+          ))}
         </Table.Body>
       </Table>
-    </div>
+
+      <Button onClick={handleCreateAdvertisement} color={'green'}>İlan Ver</Button>
+    </Container>
   );
-}
+};
+
+export default EmployerAdvertisements;

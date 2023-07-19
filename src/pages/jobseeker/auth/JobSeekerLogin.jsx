@@ -1,71 +1,91 @@
 import React, { useState } from 'react';
 import { Button, Container, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
-import { useDispatch } from 'react-redux';
-import { isArayanLogin } from '../../../store/actions/authActions';
+import { useDispatch, useSelector } from 'react-redux';
+import { jobseekerLogin } from '../../../store/actions/authActions';
 import { useHistory } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
 
 const JobSeekerLogin = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const history = useHistory();
   const [error, setError] = useState('');
+  const jobseekerLoggedIn = useSelector(state => state.auth.jobseekerLoggedIn);
+  const loginError = useSelector(state => state.auth.error);
+
 
   const handleLogin = () => {
-    dispatch(isArayanLogin(email, password));
-    history.push('/home');
+    dispatch(jobseekerLogin(email, password))
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError('');
 
-    // Check if email and password are not empty
     if (email.trim() === '' || password.trim() === '') {
-      setError('Please enter your email and password.'); // Set error message
+      setError('Lütfen e-postanızı ve şifrenizi girin.');
       return;
     }
 
     handleLogin();
   };
 
+
+  if (jobseekerLoggedIn) {
+    history.push('/');
+  }
+
   return (
-    <Container>
-      <Grid textAlign='center' style={{ height: '25vh', marginTop: '10px' }} verticalAlign='middle'>
+<Container>
+      <Grid textAlign='center' style={{ height: '50vh', marginTop: '10px' }} verticalAlign='middle'>
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as='h2' color='teal' textAlign='center'>
-            İş Arayan Girişi
-          </Header>
+        
           <Form size='large' onSubmit={handleSubmit}>
             <Segment stacked>
-              <Form.Input
-                fluid
-                icon='user'
-                iconPosition='left'
-                placeholder='E-mail address'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Form.Input
-                fluid
-                icon='lock'
-                iconPosition='left'
-                placeholder='Password'
-                type='password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-
-              <Button color='teal' fluid size='large' type='submit'>
+            <h2 as='h2' textAlign='center'>
+            İşveren Girişi <br />
+          
+          </h2>
+              <div style={{ textAlign: 'left' }}>
+                <label htmlFor="email" style={{ color: 'black' }}>E-Posta</label>
+                <Form.Input
+                
+                 
+                 
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div><p></p>
+              <div style={{ textAlign: 'left' }}>
+                <label htmlFor="password" style={{ color: 'black' }}>Şifre</label>
+                <Form.Input
+                
+                 
+                
+                  type='password'
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div><p></p>
+              <Button color='green' fluid size='large' type='submit'>
                 Giriş Yap
               </Button>
+             
+              <a href='forgot-password'>Şifremi Unuttum</a>
+
             </Segment>
           </Form>
-          {error && <Message negative>{error}</Message>} {/* Display error message if there is an error */}
+          {error && <Message negative>{error}</Message>}
+          {loginError && <Message negative>{loginError}</Message>}
           <Message>
-            Yeni misin? <a href='jobseekerregister'>Kayıt ol</a>
+            Hesabın yok mu? <a href='jobseekerregister'>Kayıt ol</a>
           </Message>
         </Grid.Column>
       </Grid>
+
     </Container>
   );
 };

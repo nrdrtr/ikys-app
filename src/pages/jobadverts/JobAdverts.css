@@ -3,10 +3,20 @@
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    /* Diğer stil özellikleri */
+    
   }
   .job-advertisement-list {
     display: flex;
     align-items: flex-start;
   }
+
+  .job-advert-detail {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    
+
+
+  }
+
   

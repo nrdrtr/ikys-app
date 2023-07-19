@@ -5,31 +5,25 @@ import { Dropdown } from 'semantic-ui-react';
 import { logoutUser } from '../../../store/actions/authActions';
 
 export default function JobSeekerDropdown() {
-  const userId = useSelector(state => state.auth.userId);
+
+  const jobSeeker = useSelector((state) => state.auth.jobSeeker);
+  const id = jobSeeker ? jobSeeker.id : null;
   const dispatch = useDispatch();
-  const history = useHistory(); // Add useHistory hook
+  const history = useHistory();
 
   const handleLogout = () => {
     dispatch(logoutUser());
-    history.push('/home'); // Redirect to homepage after logout
+    history.push('/home');
   };
 
   return (
     <div>
-      <Link to={`/jobSeekerAccount/${userId}`}>
+      <Link to={`/jobSeekerAccount/${id}`}>
         <Dropdown.Item
           text="bilgilerim"
           icon="info"
         />
       </Link>
-
-      <Link to="/jobseekeralerts">
-        <Dropdown.Item
-          text="bildirimlerim"
-          icon="info"
-        />
-      </Link>
-
       <Link to="/jobseekerfavorites">
         <Dropdown.Item
           text="favorilerim"
@@ -37,14 +31,14 @@ export default function JobSeekerDropdown() {
           style={{ backgroundColor: 'e6f3f8' }} />
       </Link>
 
-      <Link to="/jobseekercv">
+      <Link to={`/resumeDetail/${id}`}>
         <Dropdown.Item
           text="özgeçmişim"
           icon="info"
           style={{ backgroundColor: 'white' }} />
       </Link>
 
-      <Link to="/başvurularım">
+      <Link to="/basvurularım">
         <Dropdown.Item
           text="başvurularım"
           icon="info"

@@ -3,18 +3,10 @@ import { Container, Grid, Header, List, Segment, Button } from "semantic-ui-reac
 
 export default function Footer() {
 
-  const footerStyle = {
-    position: "fixed",
-    left: 0,
-    bottom: 0,
-    width: "100%",
-  };
   
-
-
   return (
     <div className="footer">
-      <Segment inverted vertical style={{ padding: "5em 0em"   ,footerStyle}}>
+      <Segment inverted    >
         <Container>
           <Grid divided inverted stackable>
             <Grid.Row>
@@ -36,9 +28,9 @@ export default function Footer() {
                   <List.Item as="a">Performans Yönetimi</List.Item>
                 </List>
               </Grid.Column>
-              <Grid.Column width={7}>
+              <Grid.Column width={9}>
                 <Header as="h4" inverted>
-                  İKYS Sistemi - İnsan Kaynakları Yönetim Sistemi
+                  İnsan Kaynakları Yönetim Sistemi
                 </Header>
                 <p>
                   Kapsamlı İKYS çözümümüzle insan kaynakları süreçlerinizi basitleştirin ve yetenek yönetimini optimize edin. İşe alım ve onboarding'den performans değerlendirmesine ve çalışan kayıtlarının yönetimine kadar ihtiyaç duyduğunuz her şey burada.

@@ -19,58 +19,65 @@ export default function JobPositionPage() {
     jobPositionService.getJobPositionById(id).then((result) => setJobPosition(result.data));
   }, [id]);
 
-  return (
-    <Container >
-    <div style={{ borderRadius: "25px", marginTop: "12 px", padding: "20px", backgroundColor: "#f9f9f9" }}>
-      <Header as="h1" textAlign="center" style={{ marginBottom: "20px", color: "#333" }}>
-        {jobPosition.data?.jobName}
-      </Header>
-      <Divider />
-      <Header as="h2" style={{ marginTop: "20px", color: "#333" }}>
-        Pozisyon Detayları
-      </Header>
-      <Grid columns={3} stackable>
-        <Grid.Row>
-          <Grid.Column>
-            <Header as="h3" style={{ color: "#777" }}>En Düşük Maaş</Header>
-            <p>{jobPosition.data?.salary}</p>
-          </Grid.Column>
-          <Grid.Column>
-            <Header as="h3" style={{ color: "#777" }}>Ortalama Maaş</Header>
-            <p>2000</p>
-          </Grid.Column>
-          <Grid.Column>
-            <Header as="h3" style={{ color: "#777" }}>En Yüksek Maaş</Header>
-            <p>3000</p>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-      <Divider />
-      {jobPosition.data?.jobName && (
-        <div>
-          <Header as="h2" style={{ marginTop: "20px", color: "#333" }}>
-            İş Tanımı
-          </Header>
-          {/* <p>{jobPosition.data?.explanation}</p> */}
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quo quas perferendis nulla repudiandae corrupti architecto eum voluptate commodi eveniet. Error dolores aspernatur asperiores.</p>
-        </div>
-      )}
-      <Divider />
-      <Header as="h2" style={{ marginTop: "20px", color: "#333" }}>
-        İlgili İş İlanları
-      </Header>
+  return ( 
+    <Container style={{ marginBottom: '5em' }}>
+      <div style={{ borderRadius: "25px", padding: "20px", backgroundColor: "#f9f9f9" }}>
+        <Header as="h1" textAlign="center" style={{ marginBottom: "20px", color: "#333" }}>
+          {jobPosition.data?.jobName} Ne İş Yapar?
+        </Header>
+        <Divider />
+        <Header as="h2" style={{ marginTop: "20px", color: "#333" }}>
+        {jobPosition.data?.jobName} Maaş Bilgileri
+        </Header>
+        <Grid columns={3} stackable>
+          <Grid.Row>
+            <Grid.Column>
+              <Header as="h3" style={{ color: "#000000" }}>En Düşük (Aylık)</Header>
+              <h4> 9.350 ₺ </h4>
+              
+            </Grid.Column>
+            <Grid.Column>
+              <Header as="h3" style={{ color: "#000000" }}>Ortalama (Aylık)</Header>
+              <h4>14.260 ₺</h4>
+            </Grid.Column>
+            <Grid.Column>
+              <Header as="h3" style={{ color: "#000000" }}>En Yüksek (Aylık)</Header>
+              <h4>19.170 ₺</h4>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+        <Divider />
+        {jobPosition.data?.jobName && (
+          <div>
+            <Header as="h2" style={{ marginTop: "20px", color: "#333" }}>
+              {jobPosition.data?.jobName} Nedir?
+            </Header>
+            <p>Herhangi bir kurum veya kuruluşta bilgisayar ağlarını planlayan kişilere ağ mimarı denir. Ağ mimarları, devlet ya da özel sektörde istihdam edebilirler. Ağ mimarları, çalıştıkları firmanın ihtiyaçlarını iyi bir şekilde belirlemesi gerekmektedir. İş konularında sağlam bir kavrayışa sahip olmaları gerekmektedir. 
+              Ağ mimarı, çalıştığı firmanın ihtiyacına göre güvenli bir şekilde ağ tasarımı yapmaktadır.</p>
+          </div>
+        )}
+        <Divider />
+        <Header as="h2" style={{ marginTop: "20px", color: "#333" }}>
+        {jobPosition.data?.jobName} İş İlanları
+        </Header>
     
-      <Card.Group itemsPerRow={3} stackable>
-        {relatedJobAdvertisements.map((jobAd) => (
-          <Card key={jobAd.id} style={{ backgroundColor: "#fff", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>  <Link to={`/jobPostings/getById/${jobAd.id}`}>
-            <Card.Content>
-              <Card.Header style={{ color: "#333" }}>{jobAd.jobPosition.jobName}</Card.Header>
-              <Card.Description style={{ color: "#777" }}>{jobAd.city.cityName}</Card.Description>
-            </Card.Content></Link>
-          </Card>
-        ))}
-      </Card.Group>
-    </div>
+        {relatedJobAdvertisements.length > 0 ? (
+          <Card.Group itemsPerRow={3} stackable>
+            {relatedJobAdvertisements.map((jobAd) => (
+              <Card key={jobAd.id} style={{ backgroundColor: "#FBF7E4"  }}>
+                <Link to={`/jobAdvertisements/getById/${jobAd.id}`}>
+                  <Card.Content>
+                    <Card.Header as="h4" style={{ color: "#0a0a0b" }}>{jobAd.jobPosition.jobName}</Card.Header>
+                    <Card.Description style={{ color: "#0a0a0b" }}>{jobAd.city.cityName}</Card.Description>
+                  </Card.Content>
+                </Link>
+              </Card>
+            ))}
+          </Card.Group>
+        ) : (
+          <p style={{ textAlign: "center" }}>İlgili iş ilanı bulunmamaktadır.</p>
+        )}
+      </div>
     </Container>
   );
 }

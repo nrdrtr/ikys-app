@@ -65,7 +65,6 @@ function VerificationSuccessPage() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // Burada API isteğinizi gerçekleştirebilirsiniz
     const fetchData = async () => {
       try {
         const response = await fetch('http://localhost:8080/api/verification/verify-jobSeeker?id=14');
